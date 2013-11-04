@@ -19,8 +19,42 @@ function Ship(){
     }*/
 }
 
+// Hazard class
+function Hazard(type, pos){
+    this.type = type;
+    this.geometry;// = new THREE.SphereGeometry(0.3,16,6);
+    this.materials;// = new THREE.MeshBasicMaterial( { color: 0xff0000 } );
+    
+    // Constructs correct color and graphics for hazard type
+    switch(type){
+        case 0:
+            this.geometry = new THREE.SphereGeometry(0.1,16,6);
+            this.materials = new THREE.MeshBasicMaterial( { color: 0xff0000 } );
+            break;
+        case 1:
+            this.geometry = new THREE.SphereGeometry(0.1,16,6);
+            this.materials = new THREE.MeshBasicMaterial( { color: 0xff0000 } );
+            break;
+        case 2:
+            this.geometry = new THREE.SphereGeometry(0.1,16,6);
+            this.materials = new THREE.MeshBasicMaterial( { color: 0xff0000 } );
+            break;
+        case 3:
+            this.geometry = new THREE.SphereGeometry(0.1,16,6);
+            this.materials = new THREE.MeshBasicMaterial( { color: 0xff0000 } );
+            break;
+        default:
+            assert("Hazard type invalid!");
+    }
+    this.mesh = new THREE.Mesh( this.geometry, this.materials );
+    this.offsetPos = this.mesh.position;// = new THREE.Vector3();
+    this.offsetPos = pos;
+}
+
 // Map class
 function Map(){
+    
+    this.hazardList = new Array();
     // Map graphics
     this.geometry = new THREE.CubeGeometry(3.5, 3.5, 3.5);
     this.materials = new THREE.MeshBasicMaterial( { color: 0x00ff00, transparent: true, opacity: 0.5  } );
@@ -33,6 +67,10 @@ function Map(){
     // Functions
     this.createMesh = function(){mesh = new THREE.Mesh( geometry, materials );}
     this.setShipPos = function(pos){ship.position = pos;}
+    this.addHazard = function(type, pos){
+        var haz = new Hazard(type, pos);
+        hazardList[ hazardList.length ] = haz;
+        }
     this.addToScene = function(scene){
             scene.add(this.mesh);
             scene.add(this.ship.mesh);
