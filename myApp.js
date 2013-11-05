@@ -31,6 +31,10 @@ for ( var i = 0; i < 7; i ++ ) {
 }
 
 map.addToScene(scene);
+var placeHere = new THREE.Vector3();
+placeHere.y = 2;
+placeHere.z = 2;
+map.addHazard(1, placeHere);
 
 
 camera.position.z = 5;
