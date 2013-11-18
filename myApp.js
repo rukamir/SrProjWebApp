@@ -3,6 +3,8 @@ scr.type="text/javascript";
 scr.src="mapClass.js";
 document.getElementsByTagName('head')[0].appendChild(scr);*/
 //comment
+var socket = new WebSocket("ws://localhost:8000/socket/server/startDaemon.php"); 
+
 
 var map = new Map();
 
@@ -32,6 +34,26 @@ for ( var i = 0; i < 7; i ++ ) {
 }
 
 map.addToScene(scene);
+// Set up socket onmessage event
+socket.onmessage = function(msg){
+		switch (msg.packetId)
+		{
+		case 0:
+			map.setShipPos(msg.pos);
+			break;
+		case 1:
+			map.addHazard(msg.id, msg.pos, msg.type);
+			break;
+		case 2:
+			map.updateHazard(msg.id, msg.pos);
+			break;
+		case 3:
+			map.deleteHazrad(msg.id);
+			break;
+		default:
+			assert("Bad message received!");
+		}
+	}
 var placeHere = new THREE.Vector3();
 placeHere.y = 2;
 placeHere.z = 2;
@@ -108,3 +130,4 @@ function render() {
 	renderer.render(scene, camera);
 }
 render();
+socket.close();

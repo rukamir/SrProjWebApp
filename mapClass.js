@@ -86,7 +86,7 @@ function Map(){
                 }
             }           
         }
-    this.deleteHazad = function(id){
+    this.deleteHazard = function(id){
             for (var i=0; i < this.hazardList.length; i++){
                 // if id is found delete then return
                 if (this.hazardList[i] == id){
