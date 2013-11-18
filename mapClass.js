@@ -1,9 +1,9 @@
 // Ship class
 function Ship(){
-    this.geometry = new THREE.SphereGeometry(0.3,16,6);
-    this.materials = new THREE.MeshBasicMaterial( { color: 0xff0000 } );
-    this.mesh = new THREE.Mesh( this.geometry, this.materials );
-    this.offsetPos = this.mesh.position;// = new THREE.Vector3();
+    this.geometry   = new THREE.SphereGeometry(0.3,16,6);
+    this.materials  = new THREE.MeshBasicMaterial( { color: 0xff0000 } );
+    this.mesh       = new THREE.Mesh( this.geometry, this.materials );
+    this.offsetPos  = this.mesh.position;// = new THREE.Vector3();
     
     // Assign ship position
     this.offsetPos.x = -2;
@@ -20,7 +20,8 @@ function Ship(){
 }
 
 // Hazard class
-function Hazard(type, pos){
+function Hazard(id, pos, type){
+    this.id     =   id;
     this.type = type;
     this.geometry;// = new THREE.SphereGeometry(0.3,16,6);
     this.materials;// = new THREE.MeshBasicMaterial( { color: 0xff0000 } );
@@ -28,26 +29,26 @@ function Hazard(type, pos){
     // Constructs correct color and graphics for hazard type
     switch(type){
         case 0:
-            this.geometry = new THREE.SphereGeometry(0.1,16,6);
-            this.materials = new THREE.MeshBasicMaterial( { color: 0xff0000 } );
+            this.geometry   = new THREE.SphereGeometry(0.1,16,6);
+            this.materials  = new THREE.MeshBasicMaterial( { color: 0xff0000 } );
             break;
         case 1:
-            this.geometry = new THREE.SphereGeometry(0.1,16,6);
-            this.materials = new THREE.MeshBasicMaterial( { color: 0xff0000 } );
+            this.geometry   = new THREE.SphereGeometry(0.1,16,6);
+            this.materials  = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
             break;
         case 2:
-            this.geometry = new THREE.SphereGeometry(0.1,16,6);
-            this.materials = new THREE.MeshBasicMaterial( { color: 0xff0000 } );
+            this.geometry   = new THREE.SphereGeometry(0.1,16,6);
+            this.materials  = new THREE.MeshBasicMaterial( { color: 0x0000ff } );
             break;
         case 3:
-            this.geometry = new THREE.SphereGeometry(0.1,16,6);
-            this.materials = new THREE.MeshBasicMaterial( { color: 0xff0000 } );
+            this.geometry   = new THREE.SphereGeometry(0.1,16,6);
+            this.materials  = new THREE.MeshBasicMaterial( { color: 0xffff00 } );
             break;
         default:
             assert("Hazard type invalid!");
     }
-    this.mesh = new THREE.Mesh( this.geometry, this.materials );
-    this.offsetPos = this.mesh.position;// = new THREE.Vector3();
+    this.mesh       = new THREE.Mesh( this.geometry, this.materials );
+    this.offsetPos  = this.mesh.position;// = new THREE.Vector3();
     this.offsetPos.x = pos.x;
     this.offsetPos.y = pos.y;
     this.offsetPos.z = pos.z;
@@ -58,10 +59,10 @@ function Map(){
     
     this.hazardList = new Array();
     // Map graphics
-    this.geometry = new THREE.CubeGeometry(3.5, 3.5, 3.5);
-    this.materials = new THREE.MeshBasicMaterial( { color: 0x00ff00, transparent: true, opacity: 0.5  } );
-    this.mesh = new THREE.Mesh( this.geometry, this.materials );
-    this.position = this.mesh.position;//new THREE.Vector3();
+    this.geometry   = new THREE.CubeGeometry(3.5, 3.5, 3.5);
+    this.materials  = new THREE.MeshBasicMaterial( { color: 0x00ff00, transparent: true, opacity: 0.5  } );
+    this.mesh       = new THREE.Mesh( this.geometry, this.materials );
+    this.position   = this.mesh.position;//new THREE.Vector3();
     this.scene;
     
     // Ship
@@ -69,12 +70,30 @@ function Map(){
     
     // Functions
     this.createMesh = function(){mesh = new THREE.Mesh( geometry, materials );}
-    this.setShipPos = function(pos){ship.position = pos;}
-    this.addHazard = function(type, pos){
+    this.setShipPos = function(pos){this.position = pos;}
+    this.addHazard  = function(id, pos, type){
             // Create hazard and add to scene
-            var haz = new Hazard(type, pos);
+            var haz = new Hazard(id, pos, type);
             this.hazardList[ this.hazardList.length ] = haz;
             this.scene.add( haz.mesh );
+        }
+    this.updateHazard = function(id, pos){
+             for (var i=0; i < this.hazardList.length; i++){
+                // if id is found update then return
+                if (this.hazardList[i] == id){
+                    this.hazardList[i].setPosition(pos);
+                    return;
+                }
+            }           
+        }
+    this.deleteHazad = function(id){
+            for (var i=0; i < this.hazardList.length; i++){
+                // if id is found delete then return
+                if (this.hazardList[i] == id){
+                    delete this.hazardList[i];
+                    return;
+                }
+            }
         }
     this.addToScene = function(scene){
         // Give this object access to the THREE.js scene object
@@ -91,12 +110,12 @@ function Map(){
             //this.ship.offsetPos.applyMatrix4(translation);
             this.ship.offsetPos.applyMatrix4( matrix );
             this.mesh.applyMatrix( matrix );
-            this.ship.mesh.applyMatrix( matrix.multiply(translation) );
+            //this.ship.mesh.applyMatrix( matrix.multiply(translation) );
             
             // Apply matrix to all registered hazards
             for (var i = 0; i < this.hazardList.length; i++) {
                 this.hazardList[i].offsetPos.applyMatrix4( matrix );
-                this.hazardList[i].mesh.applyMatrix( matrix );
+                //this.hazardList[i].mesh.applyMatrix( matrix );
             }
         }
 //*/

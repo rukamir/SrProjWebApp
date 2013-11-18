@@ -10,6 +10,7 @@ var scene = new THREE.Scene();
 var camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
 
 var renderer = new THREE.WebGLRenderer();
+renderer.setClearColor( 0x000000, 1 );
 renderer.setSize( window.innerWidth, window.innerHeight );
 document.body.appendChild( renderer.domElement );
 
@@ -34,7 +35,7 @@ map.addToScene(scene);
 var placeHere = new THREE.Vector3();
 placeHere.y = 2;
 placeHere.z = 2;
-map.addHazard(1, placeHere);
+map.addHazard(0, placeHere, 1);
 
 
 camera.position.z = 5;
