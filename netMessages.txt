@@ -1,0 +1,53 @@
+ Messages needed for networking
+ ==============================
+ 
+Items needed for a generic packet:
+	number packetID
+	number hazardID
+	vec3   position
+	number hazardType
+	
+Alternate packet type if vec3 would be difficult to interpret
+	number packetID
+	number hazardID
+	number positionX/hazard type
+	number positionY
+	number positionZ
+	
+With the combination of these data types I think we can create this single packet.
+ 
+ pk00: Start game
+		-Web client will start when packet with this ID is received.
+		
+ pk01: End game
+		-Web client will end current session when packet with this ID is received.
+		
+ pk02: Set ship position
+		-Sets the ship position with data sent from server.
+		-Expects a vect3 with relative location from the map center normalized.
+		##Packet Prototype##
+		*number 	packetID
+		*vect3		position
+		
+ pk03: Add a hazard to game/SEND
+		-Creates a graphically represent hazard on the web client.
+		##Packet Prototype##
+		*number		packetID
+		*vect3		position
+		*number		hazardType
+		
+ pk04: Update an active hazard
+		-Move or modify an active hazard
+		##Packet Prototype##
+		*number		packetID
+		*vect3		position
+		
+ pk05: Remove a hazard
+		-Remove a hazard from game when server sends this packet.
+		##Packet Prototype##
+		*number		packetID
+		*number		hazardID
+		
+ pk06: ??Connect
+ pk07: ??Disconnect
+ pk08: ??
