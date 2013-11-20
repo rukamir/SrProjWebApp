@@ -116,7 +116,7 @@ function onDocumentMouseDown( event ){
 }
 
 // Events
-document.addEventListener( 'mousemove', onDocumentMouseDown, false );
+//document.addEventListener( 'mousemove', onDocumentMouseDown, false );
 function onWindowResize() {
 	camera.aspect = window.innerWidth / window.innerHeight;
 	camera.updateProjectionMatrix();
@@ -124,18 +124,52 @@ function onWindowResize() {
 	renderer.setSize( window.innerWidth, window.innerHeight );
 }
 
+var rateOfRotation = 8;
 // Key press events
 document.onkeydown = checkKey;
 function checkKey(e) {
+	rotation.x = 0;
+	rotation.y = 0;
+	rotation.z = 0;
 
     e = e || window.event;
 
-    if (e.keyCode == '38') {
-        // up arrow
+    if (e.keyCode == '87') {
+        // w
+		rotation.x -= rateOfRotation;
+		
     }
-    else if (e.keyCode == '40') {
-        // down arrow
+    else if (e.keyCode == '83') {
+        // s
+		rotation.x += rateOfRotation;
     }
+	else if (e.keyCode == '65') {
+		// a
+		rotation.y -= rateOfRotation;
+	}
+	else if (e.keyCode == '68') {
+		// d
+		rotation.y += rateOfRotation;
+	}//*/
+	
+	var rotMatX = new THREE.Matrix4();
+	var rotMatY = new THREE.Matrix4();
+	rotMatX.makeRotationX(rotation.x * (Math.PI/180));
+	rotMatY.makeRotationY(rotation.y * (Math.PI/180));
+	var projMat = camera.projectionMatrix;
+	
+	var perMat = new THREE.Matrix4();
+	perMat.makePerspective(camera.fov, camera.aspect, camera.near, camera.far);
+	
+	// order of matrix math Scale*Rotation*Translation*view*proj
+	var comboMat = new THREE.Matrix4();
+	//comboMat.multiply(projMat);
+	//comboMat.multiply(perMat);
+	comboMat.multiply(rotMatY);
+	comboMat.multiply(rotMatX);
+	//cube.applyMatrix(comboMat);//*/
+	//sphere.applyMatrix(comboMat);
+	map.applyMatrix(comboMat);
 }
 
 function render() {
