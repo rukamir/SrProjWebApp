@@ -16,6 +16,9 @@ renderer.setClearColor( 0x000000, 1 );
 renderer.setSize( window.innerWidth, window.innerHeight );
 document.body.appendChild( renderer.domElement );
 
+// ray caster
+//var raycaster = new THREE.Raycaster(camera.position, vector.sub(camera.position).normalize());
+
 var geometry = new THREE.CubeGeometry(2,2,2);
 
 for ( var i = 0; i < 7; i ++ ) {
@@ -62,59 +65,6 @@ map.addHazard(0, placeHere, 1);
 
 camera.position.z = 5;
 
-//document
-var lastVector = new THREE.Vector3(0, 0, 0);
-var curVector = new THREE.Vector3(0, 0, 0);
-var rotation = new THREE.Vector3(0, 0, 0);
-var idMatrix = new THREE.Matrix4();
-function onDocumentMouseDown( event ){
-	curVector.x = event.clientX;
-	curVector.y = event.clientY;
-	//rotation.addScalar(0);
-	rotation.x = 0;
-	rotation.y = 0;
-	rotation.z = 0;
-	
-	// Apply identity to sphere and map objects
-	//cube.applyMatrix( new idMatrix );
-	
-	var rateOfRotation = 5;
-
-	if (curVector.x > lastVector.x){
-		rotation.y += rateOfRotation;
-	} else if (curVector.x < lastVector.x){
-		rotation.y -= rateOfRotation;
-	}
-	
-	if (curVector.y > lastVector.y){
-		rotation.x += rateOfRotation;
-	} else if (curVector.y < lastVector.y){
-		rotation.x -= rateOfRotation;
-	}
-	
-	var rotMatX = new THREE.Matrix4();
-	var rotMatY = new THREE.Matrix4();
-	rotMatX.makeRotationX(rotation.x * (Math.PI/180));
-	rotMatY.makeRotationY(rotation.y * (Math.PI/180));
-	var projMat = camera.projectionMatrix;
-	
-	var perMat = new THREE.Matrix4();
-	perMat.makePerspective(camera.fov, camera.aspect, camera.near, camera.far);
-	
-	// order of matrix math Scale*Rotation*Translation*view*proj
-	var comboMat = new THREE.Matrix4();
-	//comboMat.multiply(projMat);
-	//comboMat.multiply(perMat);
-	comboMat.multiply(rotMatY);
-	comboMat.multiply(rotMatX);
-	//cube.applyMatrix(comboMat);//*/
-	//sphere.applyMatrix(comboMat);
-	map.applyMatrix(comboMat);
-	
-	// Assign this frames mouse pos to global vector var
-	lastVector = new THREE.Vector3(curVector.x, curVector.y, curVector.z);
-}
-
 // Events
 //document.addEventListener( 'mousemove', onDocumentMouseDown, false );
 function onWindowResize() {
@@ -123,10 +73,29 @@ function onWindowResize() {
 
 	renderer.setSize( window.innerWidth, window.innerHeight );
 }
+projector = new THREE.Projector();
+function onDocumentMouseDown( event ) {
+	
+	var vector = new THREE.Vector3( ( event.clientX / window.innerWidth ) * 2 - 1, - ( event.clientY / window.innerHeight ) * 2 + 1, 0.5 );
+	projector.unprojectVector( vector, camera );
+	
+	var raycaster = new THREE.Raycaster( camera.position, vector.sub( camera.position ).normalize() );
+	
+	var intersects = raycaster.intersectObjects( scene.children );
+	var pt = intersects[0].point;
+	
+	map.addHazard(0, pt, 2);
+}
+document.addEventListener( 'mousedown', onDocumentMouseDown, false );
+//document.addEventListener( 'resize', onWindowResize, false );
 
+//document
+var lastVector = new THREE.Vector3(0, 0, 0);
+var curVector = new THREE.Vector3(0, 0, 0);
+var rotation = new THREE.Vector3(0, 0, 0);
+var idMatrix = new THREE.Matrix4();
 var rateOfRotation = 8;
 // Key press events
-document.onkeydown = checkKey;
 function checkKey(e) {
 	rotation.x = 0;
 	rotation.y = 0;
@@ -163,14 +132,11 @@ function checkKey(e) {
 	
 	// order of matrix math Scale*Rotation*Translation*view*proj
 	var comboMat = new THREE.Matrix4();
-	//comboMat.multiply(projMat);
-	//comboMat.multiply(perMat);
 	comboMat.multiply(rotMatY);
 	comboMat.multiply(rotMatX);
-	//cube.applyMatrix(comboMat);//*/
-	//sphere.applyMatrix(comboMat);
 	map.applyMatrix(comboMat);
 }
+document.onkeypress = checkKey;
 
 function render() {
 	requestAnimationFrame(render);
